@@ -1,0 +1,27 @@
+{
+  "name": "node_web-block-pages",
+  "version": "1.2.0",
+  "description": "Web server that displays a different block page on every port",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xboxfly15/node_web-block-pages.git"
+  },
+  "author": "xboxfly15",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/xboxfly15/node_web-block-pages/issues"
+  },
+  "homepage": "https://github.com/xboxfly15/node_web-block-pages#readme",
+  "dependencies": {
+    "escape-html": "^1.0.3",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "standardx": "^7.0.0"
+  }
+}
