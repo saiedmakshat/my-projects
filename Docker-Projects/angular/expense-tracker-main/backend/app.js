@@ -8,7 +8,7 @@ const userRoutes=require('./routes/user');
 const expenseRoutes=require('./routes/expense');
 
 const mongoose = require("mongoose");
-mongoose.connect('mongodb://user:pass@172.17.0.3/') //expenseTracker
+mongoose.connect('mongodb://user:pass@mongodb/') //expenseTracker
 .then(()=>{
   console.log("Connected to database");
 })

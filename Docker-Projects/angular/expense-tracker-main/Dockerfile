@@ -15,7 +15,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run ng add @angular/material --theme=indigo-pink --typography=true --animations=true
+RUN npm run ng add @angular/material
 RUN npm install bootstrap
 RUN npm run build 
 
