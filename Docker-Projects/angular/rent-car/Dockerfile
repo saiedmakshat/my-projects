@@ -1,17 +1,26 @@
-# Builder stage
-FROM node:24-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
+FROM --platform=$BUILDPLATFORM node:18.20-bullseye-slim  as builder
+RUN mkdir /project
+WORKDIR /project
+RUN npm install -g @angular/cli@13
+RUN npm install -g npm@7.6.0
+
+COPY package.json package-lock.json ./
+RUN yarn version --new-version 1.22.22
 RUN npm install
+RUN npm ci
 COPY . .
-RUN npm run ng add @angular/material --theme=indigo-pink --typography=true --animations=true
-RUN npm install bootstrap
-RUN npm run build 
+CMD ["ng", "serve", "--host", "0.0.0.0"]
 
-
-# Final stage
-FROM node:24-alpine
-WORKDIR /app
-COPY --from=builder /app/dist /app
-EXPOSE 4200
-CMD ["npm","run","start"]
+FROM builder as dev-envs
+RUN <<EOF
+apt-get update
+apt-get install -y --no-install-recommends git
+EOF
+RUN <<EOF
+useradd -s /bin/bash -m vscode
+groupadd docker
+usermod -aG docker vscode
+EOF
+# install Docker tools (cli, buildx, compose)
+COPY --from=gloursdocker/docker / /
+CMD ["ng", "serve", "--host", "0.0.0.0"]

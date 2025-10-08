@@ -1,28 +1,34 @@
-# FROM node:slim
-# WORKDIR /app
-# COPY package*.json ./
-# RUN npm install
-# COPY . .
-# RUN npm run ng add @angular/material
-# RUN npm install bootstrap
-# EXPOSE 4200
-# CMD [ "npm","ng","serve" ]
-
-
-# Builder stage
-FROM node:24-alpine AS builder
-WORKDIR /app
+FROM node:18.20-bullseye-slim  as builder
+RUN mkdir /project
+WORKDIR /project
+RUN npm install -g @angular/cli@13
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
-RUN npm run ng add @angular/material
-RUN npm install bootstrap
-RUN npm run build 
-
+EXPOSE 4200
+CMD ["ng", "serve", "--host", "0.0.0.0"]
+#RUN npm run ng build 
 
 # Final stage
-FROM node:24-alpine
+FROM builder as dev-envs
 WORKDIR /app
-COPY --from=builder /app/dist /app
+COPY package*.json ./
+COPY --from=builder /project/dist /app
+RUN <<EOF
+apt-get update
+apt-get install -y --no-install-recommends git
+EOF
 EXPOSE 4200
-CMD ["npm","run","start"]
+CMD ["npm","run","ng", "serve", "--host", "0.0.0.0"]
+
+
+
+# RUN <<EOF
+# useradd -s /bin/bash -m vscode
+# groupadd docker
+# usermod -aG docker vscode
+# EOF
+# # install Docker tools (cli, buildx, compose)
+# COPY --from=gloursdocker/docker / /
+
+# CMD ["ng", "serve", "--host", "0.0.0.0"]

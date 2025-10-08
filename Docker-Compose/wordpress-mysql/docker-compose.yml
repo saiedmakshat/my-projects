@@ -11,7 +11,18 @@ services:
     secrets:
       - db_root_password
       - db_password
-
+  phpmyadmin:
+    image: wordpress:latest
+    depends_on:
+      - db
+    ports:
+      - '8009:80'
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
   wordpress:
     image: wordpress:latest
     depends_on:
