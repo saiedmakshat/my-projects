@@ -17,10 +17,10 @@ services:
       - db
     ports:
       - '8009:80'
-    environment:
+#    environment:
 #      PMA_ARBITRARY: 1
-      PMA_USER: "root"
-      PMA_PASSWORD_FILE: /run/secrets/db_password
+#      PMA_USER: "root"
+#      PMA_PASSWORD_FILE: /run/secrets/db_password
 #      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_password
     secrets:
       - db_password

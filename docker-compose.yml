@@ -1,0 +1,12 @@
+services:
+  front:
+    image: saiedmakshat/test-secret:v1.0.0
+    secrets:
+      - my-name
+    environment:
+      - my-name="/run/secrets/my-name"
+secrets:
+  my-name:
+    external: true
+      
+    

@@ -15,5 +15,8 @@ COPY . /app
 # EOF
 # # install Docker tools (cli, buildx, compose)
 # COPY --from=gloursdocker/docker / /
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --spider -q http://localhost:3000/health || exit 1
+  
 ENTRYPOINT ["python3"] 
 CMD ["manage.py", "runserver", "0.0.0.0:8000"]

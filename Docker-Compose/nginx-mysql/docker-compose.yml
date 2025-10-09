@@ -22,7 +22,7 @@ services:
         parallelism: 1 #The number of containers to rollback at a time
         delay: 10s #The time to wait between each container group's rollback
         failure_action: continue #What to do if a rollback fails. One of continue or pause (default pause)
-        max_failure_ratio: 2 #Failure rate to tolerate during a rollback
+        max_failure_ratio: 0.5 #Failure rate to tolerate during a rollback
         order: start-first 
         #Order of operations during rollbacks. 
         #One of stop-first (old task is stopped before starting new one), 
