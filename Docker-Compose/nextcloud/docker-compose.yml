@@ -38,7 +38,7 @@ services:
       # - NEXTCLOUD_DATA_DIR= "/var/www/html/data"
       - REDIS_HOST=redis #(not set by default) Name of Redis container
       # - REDIS_HOST_PORT=6379 #(default: 6379) #Optional port for Redis, only use for external Redis servers that run on non-standard ports.
-      - REDIS_HOST_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 #(not set by default) Redis password
+      # - REDIS_HOST_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 #(not set by default) Redis password
     # networks:
     #   - redis-net
     #   - db-net
@@ -49,7 +49,8 @@ services:
     #   - "6379:6379" # Map port 6379 on the host to port 6379 in the container
     volumes:
       - redis_data:/data # Mount a named volume for data persistence
-    command: redis-server --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    command: redis-server
+    # command: redis-server --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
     # networks:
     #   - redis-net
 secrets:
