@@ -1,0 +1,68 @@
+
+services:
+  db:
+    image: mariadb:10.6
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - db:/var/lib/mysql
+    secrets:
+      - db_secret
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_secret
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_secret
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    # networks:
+    #   - db-net
+  app:
+    image: nextcloud
+    restart: always
+    ports:
+      - 8080:80
+    links:
+      - db
+      - redis
+    volumes:
+      - nextcloud:/var/www/html
+    secrets:
+      - db_secret
+      - admin_pass
+    environment:
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_secret
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
+      - NEXTCLOUD_ADMIN_USER=saied
+      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/admin_pass
+      # - NEXTCLOUD_DATA_DIR= "/var/www/html/data"
+      - REDIS_HOST=redis #(not set by default) Name of Redis container
+      # - REDIS_HOST_PORT=6379 #(default: 6379) #Optional port for Redis, only use for external Redis servers that run on non-standard ports.
+      - REDIS_HOST_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 #(not set by default) Redis password
+    # networks:
+    #   - redis-net
+    #   - db-net
+  redis: 
+    image: redis:latest # Use the latest official Redis image from Docker Hub
+    restart: always # Ensure the container restarts automatically if it stops
+    # ports:
+    #   - "6379:6379" # Map port 6379 on the host to port 6379 in the container
+    volumes:
+      - redis_data:/data # Mount a named volume for data persistence
+    command: redis-server --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    # networks:
+    #   - redis-net
+secrets:
+  db_secret:
+    file: db_pass.txt
+  admin_pass:
+    file: admin_pass.txt
+
+volumes:
+  nextcloud:
+  db:
+  redis_data:
+
+# networks:
+#   redis-net:
+#   db-net:
