@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh "cd /Docker-Projects/angular/expense-tracker-main"
+                sh "cd /angular/expense-tracker-main"
                 sh "docker build . -t saiedmakshat/angular-test:${GIT_HASH}"
             }
         }
