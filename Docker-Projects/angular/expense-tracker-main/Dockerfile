@@ -5,7 +5,7 @@ RUN npm install -g @angular/cli@13
 COPY package*.json ./
 RUN npm ci
 COPY . .
-EXPOSE 4200
+#EXPOSE 4200
 #CMD ["npm","run","ng", "build"]
 #CMD ["ng", "serve", "--host", "0.0.0.0"]
 RUN npm run ng build 
