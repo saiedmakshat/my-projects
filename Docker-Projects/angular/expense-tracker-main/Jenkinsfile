@@ -23,11 +23,11 @@ pipeline {
                 sh "docker push saiedmakshat/angular-test:${GIT_HASH}"
             }
         }
-        stage('RUN') {
-            steps {
-                sh "docker run -d --name angular -p 8801:80 saiedmakshat/angular-test:${GIT_HASH}"
-            }
-        }
+        // stage('RUN') {
+        //     steps {
+        //         sh "docker run -d --name angular -p 8801:80 saiedmakshat/angular-test:${GIT_HASH}"
+        //     }
+        // }
         stage('Logout from Docker') {
             steps {
                 sh "docker logout"
