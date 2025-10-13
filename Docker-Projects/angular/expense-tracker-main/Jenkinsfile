@@ -24,7 +24,7 @@ pipeline {
         }
         stage('RUN') {
             steps {
-                sh "docker run -d --name angular -p 8801:80 saiedmakshat/ngangularinx-test:${GIT_HASH}"
+                sh "docker run -d --name angular -p 8801:80 saiedmakshat/angular-test:${GIT_HASH}"
             }
         }
         stage('Logout from Docker') {
