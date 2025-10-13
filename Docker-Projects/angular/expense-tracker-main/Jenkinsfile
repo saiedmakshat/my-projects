@@ -14,17 +14,17 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh "docker build . -t saiedmakshat/nginx-test:${GIT_HASH}"
+                sh "docker build . -t saiedmakshat/angular-test:${GIT_HASH}"
             }
         }
         stage('PUSH') {
             steps {
-                sh "docker push saiedmakshat/nginx-test:${GIT_HASH}"
+                sh "docker push saiedmakshat/angular-test:${GIT_HASH}"
             }
         }
         stage('RUN') {
             steps {
-                sh "docker run -d --name nginx -p 8801:80 saiedmakshat/nginx-test:${GIT_HASH}"
+                sh "docker run -d --name angular -p 8801:80 saiedmakshat/ngangularinx-test:${GIT_HASH}"
             }
         }
         stage('Logout from Docker') {
