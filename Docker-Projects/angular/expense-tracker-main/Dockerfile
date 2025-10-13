@@ -6,8 +6,9 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 EXPOSE 4200
-CMD ["ng", "serve", "--host", "0.0.0.0"]
-#RUN npm run ng build 
+#CMD ["npm","run","ng", "build"]
+#CMD ["ng", "serve", "--host", "0.0.0.0"]
+RUN npm run ng build 
 
 # Final stage
 FROM builder as dev-envs
