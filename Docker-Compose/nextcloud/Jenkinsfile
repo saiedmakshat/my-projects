@@ -1,0 +1,22 @@
+pipeline {
+    agent {
+        label 'master-node'
+        label 'docker-0'
+    }
+    environment {
+        // Bind the 'docker-hub-creds' credentials to an environment variable named DOCKER_CREDS
+        //DOCKER_CREDS = credentials('dockerhub') 
+        GIT_HASH = GIT_COMMIT.take(7)
+    }
+    
+    stages {
+
+        stage('Build') {
+            steps {
+                dir('Docker-Compose/nextcloud') {
+                    sh "docker stack deploy --compose-file docker-compose.yml nextcloud"
+                }
+            }
+        }
+    }
+}
