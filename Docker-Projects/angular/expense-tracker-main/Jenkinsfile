@@ -12,10 +12,10 @@ pipeline {
 
         stage('Build') {
             steps {
-                // dir('Docker-Projects/angular/expense-tracker-main') {
-                //     sh "docker build . -t saiedmakshat/angular-test:${GIT_HASH}"
-                // }
-                sh "docker build . -t saiedmakshat/angular-test:${GIT_HASH}"
+                dir('Docker-Projects/angular/expense-tracker-main') {
+                    sh "docker build . -t saiedmakshat/angular-test:${GIT_HASH}"
+                }
+                //sh "docker build . -t saiedmakshat/angular-test:${GIT_HASH}"
             }
         }
         stage('Login to Docker') {
