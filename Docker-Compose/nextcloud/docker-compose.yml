@@ -1,20 +1,5 @@
 
 services:
-  db:
-    image: mariadb:10.6
-    restart: always
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
-    volumes:
-      - db:/var/lib/mysql
-    secrets:
-      - db_secret
-    environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_secret
-      - MYSQL_PASSWORD_FILE=/run/secrets/db_secret
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-    # networks:
-    #   - db-net
   app:
     image: nextcloud
     restart: always
@@ -42,6 +27,22 @@ services:
     # networks:
     #   - redis-net
     #   - db-net
+  db:
+    image: mariadb:10.6
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - db:/var/lib/mysql
+    secrets:
+      - db_secret
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_secret
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_secret
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    # networks:
+    #   - db-net
+
   redis: 
     image: redis:latest # Use the latest official Redis image from Docker Hub
     restart: always # Ensure the container restarts automatically if it stops
