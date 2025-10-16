@@ -1,7 +1,7 @@
 pipeline {
     agent {
         label 'master-node'
-        label 'docker-0'
+        //label 'docker-0'
     }
     environment {
         // Bind the 'docker-hub-creds' credentials to an environment variable named DOCKER_CREDS
