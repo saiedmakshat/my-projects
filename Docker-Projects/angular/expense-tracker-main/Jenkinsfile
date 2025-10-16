@@ -1,55 +1,51 @@
 pipeline {
     agent {
         label 'master-node'
-        //label 'docker-0'
     }
     environment {
-        // Bind the 'docker-hub-creds' credentials to an environment variable named DOCKER_CREDS
-        DOCKER_CREDS = credentials('dockerhub') 
-        GIT_HASH = GIT_COMMIT.take(7)
         SCANNER_HOME= tool 'sonar-scanner'
     }
-    
+    tools {
+        // Reference the NodeJS installation configured in Global Tool Configuration
+        nodejs 'node-18' // Use the name you assigned earlier
+    }
     stages {
-
-        stage('Build') {
+        // stage('Git Checkout') {
+        //     steps {
+        //         git branch: 'main', changelog: false, credentialsId:
+        //         'github', poll: false, url:
+        //         'https://github.com/saiedmakshat/my-projects.git'
+        //     }
+        // }
+        stage('npm install') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
-                    sh "docker build . -t saiedmakshat/angular-test:${GIT_HASH}"
-                    sh "echo saiedmakshat/angular-test:${GIT_HASH} > image-name"
+                    sh 'npm install'
                 }
-                //sh "docker build . -t saiedmakshat/angular-test:${GIT_HASH}"
             }
         }
-        // stage('Login to Docker') {
-        //     steps {
-        //         // Use the environment variables created by credentials() for docker login
-        //         sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}" 
-        //     }
-        // }
-        //  stage('PUSH') {
-        //     steps {
-        //         sh "docker push saiedmakshat/angular-test:${GIT_HASH}"
-        //     }
-        // }
+        stage('npm build') {
+            steps {
+                dir('Docker-Projects/angular/expense-tracker-main') {
+                    sh 'npm run build --prod'
+                }
+            }
+        }
+//        stage('OWASP Scan') {
+//            steps {
+//                dir('Docker-Projects/angular/expense-tracker-main') {
+//                    dependencyCheck additionalArguments: ' --scan ./ --format XML --format HTML', odcInstallation: 'DP'
+//                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+//                }
+//            }
+//        }
         stage('SonarQube') {
             steps {
                dir('Docker-Projects/angular/expense-tracker-main') { 
                 withSonarQubeEnv('sonar-server') {
-                    sh '''
-                        $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar-ProjectName=expense-tracker \
-                        -Dsonar-Java.binaries=. \
-                        -Dsonar-projectKey=expense-tracker
-
-                    '''
+                    sh '$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker-${JOB_NAME}-${BUILD_NUMBER} -Dsonar.sources=. -Dsonar.projectKey=expense-tracker'
                 }}
             }
         }
-        // stage('Logout from Docker') {
-        //     steps {
-        //         sh "docker logout"
-        //     }
-        // }
 }
 }
