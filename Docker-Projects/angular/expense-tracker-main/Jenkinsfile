@@ -7,6 +7,7 @@ pipeline {
         // Bind the 'docker-hub-creds' credentials to an environment variable named DOCKER_CREDS
         DOCKER_CREDS = credentials('dockerhub') 
         GIT_HASH = GIT_COMMIT.take(7)
+        SCANNER_HOME= tool 'sonar-scanner'
     }
     
     stages {
@@ -20,26 +21,34 @@ pipeline {
                 //sh "docker build . -t saiedmakshat/angular-test:${GIT_HASH}"
             }
         }
-        stage('Login to Docker') {
+        // stage('Login to Docker') {
+        //     steps {
+        //         // Use the environment variables created by credentials() for docker login
+        //         sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}" 
+        //     }
+        // }
+        //  stage('PUSH') {
+        //     steps {
+        //         sh "docker push saiedmakshat/angular-test:${GIT_HASH}"
+        //     }
+        // }
+        stage('SonarQube') {
             steps {
-                // Use the environment variables created by credentials() for docker login
-                sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}" 
+                withSonarQubeEnv('sonar-server') {
+                    sh '''
+                        $SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar-ProjectName=expense-tracker \
+                        -Dsonar-Java.binaries=. \
+                        -Dsonar-projectKey=expense-tracker
+
+                    '''
+                }
             }
         }
-         stage('PUSH') {
-            steps {
-                sh "docker push saiedmakshat/angular-test:${GIT_HASH}"
-            }
-        }
-        stage('RUN') {
-            steps {
-                sh "docker run -d --name angular -p 8801:80 saiedmakshat/angular-test:${GIT_HASH}"
-            }
-        }
-        stage('Logout from Docker') {
-            steps {
-                sh "docker logout"
-            }
-        }
+        // stage('Logout from Docker') {
+        //     steps {
+        //         sh "docker logout"
+        //     }
+        // }
 }
 }
