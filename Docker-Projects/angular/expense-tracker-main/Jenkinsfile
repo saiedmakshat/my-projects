@@ -34,6 +34,7 @@ pipeline {
         // }
         stage('SonarQube') {
             steps {
+               dir('Docker-Projects/angular/expense-tracker-main') { 
                 withSonarQubeEnv('sonar-server') {
                     sh '''
                         $SCANNER_HOME/bin/sonar-scanner \
@@ -42,7 +43,7 @@ pipeline {
                         -Dsonar-projectKey=expense-tracker
 
                     '''
-                }
+                }}
             }
         }
         // stage('Logout from Docker') {
