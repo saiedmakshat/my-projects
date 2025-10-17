@@ -45,8 +45,9 @@ pipeline {
         stage('SonarQube') {
             steps {
                dir('Docker-Projects/angular/expense-tracker-main') { 
+                    sh "echo sonar.projectKey=expense-tracker-${GIT_HASH} > sonar-project.properties"
                     withSonarQubeEnv('sonar-server') {
-                        sh '$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker -Dsonar.sources=. -Dsonar.projectKey=expense-tracker'
+                        sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker-${GIT_HASH} -Dsonar.sources=. -Dsonar.projectKey=expense-tracker-${GIT_HASH}"
                     }
                 }
             }
@@ -56,6 +57,7 @@ pipeline {
                 dir('Docker-Projects/angular/expense-tracker-main') {
                     sh "docker build . -t ${IMAGE_NAME}"
                     sh "echo IMAGE_NAME=${IMAGE_NAME} > .env"
+                    sh "export IMAGE_NAME==${IMAGE_NAME}"
                 }
             }
         }
@@ -76,10 +78,12 @@ pipeline {
                 sh "docker logout" 
             }
         }
-        stage('rundocker stack') {
+        stage('run docker stack') {
             steps {
-                // Use the environment variables created by credentials() for docker login
-                sh "docker stack depoly --compose-file docker-compose.yml expense" 
+                dir('Docker-Projects/angular/expense-tracker-main') {
+                    // Use the environment variables created by credentials() for docker login
+                    sh "docker stack deploy --compose-file docker-compose.yml expense" 
+                }
             }
         }
     }
