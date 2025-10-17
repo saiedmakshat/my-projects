@@ -34,20 +34,20 @@ pipeline {
                 }
             }
         }
-       stage('OWASP Scan') {
-           steps {
-               dir('Docker-Projects/angular/expense-tracker-main') {
-                   dependencyCheck additionalArguments: ' --scan ./ --format XML --format HTML', odcInstallation: 'DP'
-                   dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-               }
-           }
-       }
+    //    stage('OWASP Scan') {
+    //        steps {
+    //            dir('Docker-Projects/angular/expense-tracker-main') {
+    //                dependencyCheck additionalArguments: ' --scan ./ --format XML --format HTML', odcInstallation: 'DP'
+    //                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+    //            }
+    //        }
+    //    }
         stage('SonarQube') {
             steps {
                dir('Docker-Projects/angular/expense-tracker-main') { 
-                    sh "echo sonar.projectKey=expense-tracker-${GIT_HASH} > sonar-project.properties"
+                    sh "echo sonar.projectKey=expense-tracker > sonar-project.properties"
                     withSonarQubeEnv('sonar-server') {
-                        sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker-${GIT_HASH} -Dsonar.sources=. -Dsonar.projectKey=expense-tracker-${GIT_HASH}"
+                        sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker -Dsonar.sources=. -Dsonar.projectKey=expense-tracker"
                     }
                 }
             }
@@ -83,6 +83,22 @@ pipeline {
                 dir('Docker-Projects/angular/expense-tracker-main') {
                     // Use the environment variables created by credentials() for docker login
                     sh "docker stack deploy --compose-file docker-compose.yml expense" 
+                }
+            }
+        }
+        stage('Get Commit Hashes') {
+            steps {
+                script {
+                    def commitHashes = sh(script: 'git log -n 3 --pretty=format:%H', returnStdout: true).trim().split('\\n')
+                    echo "Last 3 commit hashes: ${commitHashes}"
+
+                    // You can access individual hashes like this:
+                    echo "Latest commit hash: ${commitHashes[0]}"
+                    echo "Latest commit hash: ${commitHashes[0].take(7)}"
+                    echo "Second latest commit hash: ${commitHashes[1]}"
+                    echo "Second latest commit hash:${commitHashes[1].take(7)}"
+                    echo "Third latest commit hash: ${commitHashes[2]}"
+                    echo "Third latest commit hash: ${commitHashes[2].take(7)}"
                 }
             }
         }
