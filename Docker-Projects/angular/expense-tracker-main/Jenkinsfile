@@ -6,6 +6,7 @@ pipeline {
         SCANNER_HOME= tool 'sonar-scanner'
         DOCKER_CREDS = credentials('dockerhub') 
         GIT_HASH = GIT_COMMIT.take(7)
+        IMAGE_NAME = saiedmakshat/angular-test:${GIT_HASH}
     }
     tools {
         // Reference the NodeJS installation configured in Global Tool Configuration
@@ -53,8 +54,8 @@ pipeline {
         stage('build image') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
-                    sh 'docker build -t saiedmakshat/angular-test:${GIT_HASH} .'
-                    sh 'echo IMAGE_NAME=saiedmakshat/angular-test:${GIT_HASH} > .env'
+                    sh "docker build . -t ${IMAGE_NAME}"
+                    sh "echo IMAGE_NAME=${IMAGE_NAME} > .env"
                 }
             }
         }
@@ -66,7 +67,7 @@ pipeline {
         }
          stage('PUSH') {
             steps {
-                sh "docker push saiedmakshat/angular-test:${GIT_HASH}"
+                sh "docker push ${IMAGE_NAME}"
             }
         }
         stage('Logout from Docker') {
