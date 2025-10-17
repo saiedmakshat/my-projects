@@ -53,7 +53,7 @@ pipeline {
         stage('build image') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
-                    sh 'docker build -t saiedmakshat/angular-test:${GIT_HASH}'
+                    sh 'docker build -t saiedmakshat/angular-test:${GIT_HASH} .'
                     sh 'echo IMAGE_NAME=saiedmakshat/angular-test:${GIT_HASH} > .env'
                 }
             }
