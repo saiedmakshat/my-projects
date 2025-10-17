@@ -79,7 +79,7 @@ pipeline {
         stage('rundocker stack') {
             steps {
                 // Use the environment variables created by credentials() for docker login
-                sh "docker stack depoly --compose-file docker-compose.yml -d" 
+                sh "docker stack depoly --compose-file docker-compose.yml expense" 
             }
         }
     }
