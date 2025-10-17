@@ -4,6 +4,8 @@ pipeline {
     }
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
+        DOCKER_CREDS = credentials('dockerhub') 
+        GIT_HASH = GIT_COMMIT.take(7)
     }
     tools {
         // Reference the NodeJS installation configured in Global Tool Configuration
@@ -42,10 +44,42 @@ pipeline {
         stage('SonarQube') {
             steps {
                dir('Docker-Projects/angular/expense-tracker-main') { 
-                withSonarQubeEnv('sonar-server') {
-                    sh '$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker-${JOB_NAME}-${BUILD_NUMBER} -Dsonar.sources=. -Dsonar.projectKey=expense-tracker'
-                }}
+                    withSonarQubeEnv('sonar-server') {
+                        sh '$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker -Dsonar.sources=. -Dsonar.projectKey=expense-tracker'
+                    }
+                }
             }
         }
-}
+        stage('build image') {
+            steps {
+                dir('Docker-Projects/angular/expense-tracker-main') {
+                    sh 'docker build -t saiedmakshat/angular-test:${GIT_HASH}'
+                    sh 'echo IMAGE_NAME=saiedmakshat/angular-test:${GIT_HASH} > .env'
+                }
+            }
+        }
+        stage('Login to Docker') {
+            steps {
+                // Use the environment variables created by credentials() for docker login
+                sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}" 
+            }
+        }
+         stage('PUSH') {
+            steps {
+                sh "docker push saiedmakshat/angular-test:${GIT_HASH}"
+            }
+        }
+        stage('Logout from Docker') {
+            steps {
+                // Use the environment variables created by credentials() for docker login
+                sh "docker logout" 
+            }
+        }
+        stage('rundocker stack') {
+            steps {
+                // Use the environment variables created by credentials() for docker login
+                sh "docker stack depoly --compose-file docker-compose.yml -d" 
+            }
+        }
+    }
 }

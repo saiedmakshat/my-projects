@@ -1,69 +1,47 @@
 
 services:
-  app:
-    image: nextcloud
+  expense_tracker:
+    image: "${IMAGE_NAME}"
     restart: always
     ports:
-      - 8080:80
-    links:
-      - db
-      - redis
+      - 2206:80
     volumes:
-      - nextcloud:/var/www/html
-    secrets:
-      - db_secret
-      - admin_pass
-    environment:
-      - MYSQL_PASSWORD_FILE=/run/secrets/db_secret
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_HOST=db
-      - NEXTCLOUD_ADMIN_USER=saied
-      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/admin_pass
-      # - NEXTCLOUD_DATA_DIR= "/var/www/html/data"
-      - REDIS_HOST=redis #(not set by default) Name of Redis container
-      # - REDIS_HOST_PORT=6379 #(default: 6379) #Optional port for Redis, only use for external Redis servers that run on non-standard ports.
-      # - REDIS_HOST_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 #(not set by default) Redis password
-    # networks:
-    #   - redis-net
-    #   - db-net
-  db:
-    image: mariadb:10.6
-    restart: always
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
-    volumes:
-      - db:/var/lib/mysql
-    secrets:
-      - db_secret
-    environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_secret
-      - MYSQL_PASSWORD_FILE=/run/secrets/db_secret
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-    # networks:
-    #   - db-net
-
-  redis: 
-    image: redis:latest # Use the latest official Redis image from Docker Hub
-    restart: always # Ensure the container restarts automatically if it stops
-    # ports:
-    #   - "6379:6379" # Map port 6379 on the host to port 6379 in the container
-    volumes:
-      - redis_data:/data # Mount a named volume for data persistence
-    command: redis-server
-    # command: redis-server --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-    # networks:
-    #   - redis-net
-secrets:
-  db_secret:
-    file: db_pass.txt
-  admin_pass:
-    file: admin_pass.txt
-
+      - expense_tracker:/usr/share/nginx/html
+    deploy:
+      replicas: 4
+      resources:
+        limits:
+          cpus: "1" #maxinmun cpu
+          memory: 200M #maxinmum memory
+        reservations:
+          cpus: "0.25" # minimun cpu
+          memory: 50M # minimum memory
+      update_config:
+        parallelism: 1 #The number of containers to rollback at a time
+        delay: 10s #The time to wait between each container group's rollback
+        failure_action: continue #What to do if a rollback fails. One of continue or pause (default pause)
+        max_failure_ratio: 0.5 #Failure rate to tolerate during a rollback
+        order: start-first 
+        #Order of operations during rollbacks. 
+        #One of stop-first (old task is stopped before starting new one), 
+        # or start-first (new task is started first, and the running tasks briefly overlap) 
+      restart_policy:
+        condition: any
+        #none, containers are not automatically restarted regardless of the exit status.
+        #on-failure, the container is restarted if it exits due to an error, which manifests as a non-zero exit code.
+        #any (default), containers are restarted regardless of the exit status.
+        delay: 5s #How long to wait between restart attempts
+        max_attempts: 3 #The maximum number of failed restart attempts allowed before giving up
+        window: 60s #The amount of time to wait after a restart to determine whether it was successful
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost"]
+      interval: 2m
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 volumes:
-  nextcloud:
-  db:
-  redis_data:
+  expense_tracker:
+
 
 # networks:
 #   redis-net:
