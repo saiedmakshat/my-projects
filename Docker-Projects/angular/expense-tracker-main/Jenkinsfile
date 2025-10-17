@@ -9,7 +9,6 @@ pipeline {
         IMAGE_NAME = "saiedmakshat/angular-test:${GIT_HASH}"
     }
     tools {
-        // Reference the NodeJS installation configured in Global Tool Configuration
         nodejs 'node-18' // Use the name you assigned earlier
     }
     stages {
@@ -63,7 +62,6 @@ pipeline {
         }
         stage('Login to Docker') {
             steps {
-                // Use the environment variables created by credentials() for docker login
                 sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}" 
             }
         }
@@ -74,14 +72,12 @@ pipeline {
         }
         stage('Logout from Docker') {
             steps {
-                // Use the environment variables created by credentials() for docker login
                 sh "docker logout" 
             }
         }
         stage('run docker stack') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
-                    // Use the environment variables created by credentials() for docker login
                     sh "docker stack deploy --compose-file docker-compose.yml expense" 
                 }
             }
@@ -92,7 +88,6 @@ pipeline {
                     def commitHashes = sh(script: 'git log -n 3 --pretty=format:%H', returnStdout: true).trim().split('\\n')
                     echo "Last 3 commit hashes: ${commitHashes}"
 
-                    // You can access individual hashes like this:
                     echo "Latest commit hash: ${commitHashes[0]}"
                     echo "Latest commit hash: ${commitHashes[0].take(7)}"
                     echo "Second latest commit hash: ${commitHashes[1]}"
