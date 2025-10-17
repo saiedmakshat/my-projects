@@ -1,4 +1,4 @@
-Current working app in <h1>Docker-Projects/angular/expense-tracker-main<h1>
+Current working app in <h1>Docker-Projects/angular/expense-tracker-main</h1>
 
 <br>
 
