@@ -34,14 +34,14 @@ pipeline {
                 }
             }
         }
-//        stage('OWASP Scan') {
-//            steps {
-//                dir('Docker-Projects/angular/expense-tracker-main') {
-//                    dependencyCheck additionalArguments: ' --scan ./ --format XML --format HTML', odcInstallation: 'DP'
-//                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-//                }
-//            }
-//        }
+       stage('OWASP Scan') {
+           steps {
+               dir('Docker-Projects/angular/expense-tracker-main') {
+                   dependencyCheck additionalArguments: ' --scan ./ --format XML --format HTML', odcInstallation: 'DP'
+                   dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+               }
+           }
+       }
         stage('SonarQube') {
             steps {
                dir('Docker-Projects/angular/expense-tracker-main') { 
