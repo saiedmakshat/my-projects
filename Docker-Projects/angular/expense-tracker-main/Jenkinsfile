@@ -10,6 +10,7 @@ pipeline {
     }
     tools {
         nodejs 'node-18' // Use the name you assigned earlier
+        maven 'maven3'
     }
     stages {
         // stage('Git Checkout') {
@@ -43,22 +44,26 @@ pipeline {
     //    }
         stage('Generate SBOM') {
             steps {
-                // Example using OWASP Dependency-Check to generate a CycloneDX SBOM
-                sh 'mvn org.owasp:dependency-check-maven:check -Dformat=XML -DoutputDirectory=target -Dcyclonedx.enabled=true'
+                dir('Docker-Projects/angular/expense-tracker-main') {
+                    // Example using OWASP Dependency-Check to generate a CycloneDX SBOM
+                    sh 'mvn org.owasp:dependency-check-maven:check -Dformat=XML -DoutputDirectory=target -Dcyclonedx.enabled=true'
+                }
             }
         }
         stage('Publish SBOM to Dependency-Track') {
             steps {
-                dependencyTrackPublisher(
-                    artifact: 'target/bom.xml', // Path to your generated SBOM
-                    projectName: 'MyApplication',
-                    projectVersion: '1.0.0',
-                    synchronous: true, // Optional: Set to true for synchronous publishing
-                    // Optional: Configure thresholds for synchronous publishing
-                    //totalFindingsThreshold: 10,
-                    //newFindingsThreshold: 5,
-                    //highFindingsThreshold: 2
-                )
+                dir('Docker-Projects/angular/expense-tracker-main') {
+                    dependencyTrackPublisher(
+                        artifact: 'target/bom.xml', // Path to your generated SBOM
+                        projectName: 'expense-tracker ',
+                        projectVersion: '1.0.0',
+                        synchronous: true, // Optional: Set to true for synchronous publishing
+                        // Optional: Configure thresholds for synchronous publishing
+                        //totalFindingsThreshold: 10,
+                        //newFindingsThreshold: 5,
+                        //highFindingsThreshold: 2
+                    )
+                }
             }
         }
         stage('SonarQube') {
