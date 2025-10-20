@@ -55,9 +55,9 @@ pipeline {
                     projectVersion: '1.0.0',
                     synchronous: true, // Optional: Set to true for synchronous publishing
                     // Optional: Configure thresholds for synchronous publishing
-                    totalFindingsThreshold: 10,
-                    newFindingsThreshold: 5,
-                    highFindingsThreshold: 2
+                    //totalFindingsThreshold: 10,
+                    //newFindingsThreshold: 5,
+                    //highFindingsThreshold: 2
                 )
             }
         }
