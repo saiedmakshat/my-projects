@@ -68,7 +68,7 @@ pipeline {
         //         }
         //     }
         // }
-       stage('Publish SBOM to Dependency-Track') {
+       stage('Publish SBOM to Dependency-Track1') {
             steps {
                 dir('Docker-Projects/nodejs/node-app') {
                     sh '''
