@@ -69,9 +69,25 @@ pipeline {
         stage('Publish SBOM to Dependency-Track') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
+                dependencyTrackPublisher 
+                artifact: 'expense-tracker-sbom.json', 
+                artifactType: 'bom', 
+                projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b',
+                // projectName: 'Acme Example', 
+                // projectVersion: '1.0', 
+                synchronous: true
+    
+    //dependencyTrackPublisher artifact: 'bom.xml', artifactType: 'bom', projectId: '3a38aedf-e9e9-4e0a-8913-2d99951aa76d', synchronous: true
+
+                }
+            }
+        }
+       stage('Publish SBOM to Dependency-Track') {
+            steps {
+                dir('Docker-Projects/angular/expense-tracker-main') {
                     dependencyTrackPublisher(
                         artifact: 'expense-tracker-sbom.json', // Path to your generated SBOM
-                        projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b'
+                        projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b',
                         // projectName: 'expense-tracker',
                         // projectVersion: '1.0.0',
                         // synchronous: true, // Optional: Set to true for synchronous publishing
@@ -83,7 +99,7 @@ pipeline {
                     )
                 }
             }
-        }
+        }        
         // stage('SonarQube') {
         //     steps {
         //        dir('Docker-Projects/angular/expense-tracker-main') { 
