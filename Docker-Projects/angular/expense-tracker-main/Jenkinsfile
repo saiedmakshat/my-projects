@@ -71,9 +71,11 @@ pipeline {
                 dir('Docker-Projects/angular/expense-tracker-main') {
                     dependencyTrackPublisher(
                         artifact: 'expense-tracker-sbom.json', // Path to your generated SBOM
-                        projectName: 'expense-tracker',
-                        projectVersion: '1.0.0',
-                        synchronous: true, // Optional: Set to true for synchronous publishing
+                        projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b'
+                        // projectName: 'expense-tracker',
+                        // projectVersion: '1.0.0',
+                        // synchronous: true, // Optional: Set to true for synchronous publishing
+                        // autoCreateProjects: true,
                         // Optional: Configure thresholds for synchronous publishing
                         //totalFindingsThreshold: 10,
                         //newFindingsThreshold: 5,
@@ -138,5 +140,12 @@ pipeline {
         //         }
         //     }
         // }
+
+    // post {
+    //     always {
+    //         archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
+    //         junit 'build/reports/**/*.xml'
+    //     }
+    // }
     }
 }
