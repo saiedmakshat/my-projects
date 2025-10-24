@@ -20,13 +20,28 @@ pipeline {
         //         'https://github.com/saiedmakshat/my-projects.git'
         //     }
         // }
+        stage('npm install CycloneDX') {
+            steps {
+                dir('Docker-Projects/angular/expense-tracker-main') {
+                    sh "npm i @cyclonedx/cyclonedx-npm"
+                }
+            }
+        }
         stage('npm install') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
                     sh 'npm install'
+                    sh 'npx @cyclonedx/cyclonedx-npm --output-file expense-tracker-sbom.json'
                 }
             }
         }
+        stage('Generate SBOM file') {
+            steps {
+                dir('Docker-Projects/angular/expense-tracker-main') {
+                    sh 'npx @cyclonedx/cyclonedx-npm --output-file expense-tracker-sbom.json'
+                }
+            }
+        } 
         // stage('npm build') {
         //     steps {
         //         dir('Docker-Projects/angular/expense-tracker-main') {
@@ -42,20 +57,21 @@ pipeline {
     //            }
     //        }
     //    }
-        stage('Generate SBOM') {
-            steps {
-                dir('Docker-Projects/angular/expense-tracker-main') {
-                    // Example using OWASP Dependency-Check to generate a CycloneDX SBOM
-                    sh 'mvn org.owasp:dependency-check-maven:check -Dformat=XML -DoutputDirectory=target -Dcyclonedx.enabled=true'
-                }
-            }
-        }
+        // stage('Generate SBOM') {
+        //     steps {
+        //         dir('Docker-Projects/angular/expense-tracker-main') {
+                    
+        //             // Example using OWASP Dependency-Check to generate a CycloneDX SBOM
+        //             sh 'mvn org.owasp:dependency-check-maven:check -Dformat=XML -DoutputDirectory=target -Dcyclonedx.enabled=true'
+        //         }
+        //     }
+        // }
         stage('Publish SBOM to Dependency-Track') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
                     dependencyTrackPublisher(
-                        artifact: 'target/bom.xml', // Path to your generated SBOM
-                        projectName: 'expense-tracker ',
+                        artifact: 'expense-tracker-sbom.json', // Path to your generated SBOM
+                        projectName: 'expense-tracker',
                         projectVersion: '1.0.0',
                         synchronous: true, // Optional: Set to true for synchronous publishing
                         // Optional: Configure thresholds for synchronous publishing
@@ -66,61 +82,61 @@ pipeline {
                 }
             }
         }
-        stage('SonarQube') {
-            steps {
-               dir('Docker-Projects/angular/expense-tracker-main') { 
-                    sh "echo sonar.projectKey=expense-tracker > sonar-project.properties"
-                    withSonarQubeEnv('sonar-server') {
-                        sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker -Dsonar.sources=. -Dsonar.projectKey=expense-tracker"
-                    }
-                }
-            }
-        }
-        stage('build image') {
-            steps {
-                dir('Docker-Projects/angular/expense-tracker-main') {
-                    sh "docker build . -t ${IMAGE_NAME}"
-                    sh "echo IMAGE_NAME=${IMAGE_NAME} > .env"
-                    sh "export IMAGE_NAME==${IMAGE_NAME}"
-                }
-            }
-        }
-        stage('Login to Docker') {
-            steps {
-                sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}" 
-            }
-        }
-         stage('PUSH') {
-            steps {
-                sh "docker push ${IMAGE_NAME}"
-            }
-        }
-        stage('Logout from Docker') {
-            steps {
-                sh "docker logout" 
-            }
-        }
-        stage('run docker stack') {
-            steps {
-                dir('Docker-Projects/angular/expense-tracker-main') {
-                    sh "docker stack deploy --compose-file docker-compose.yml expense" 
-                }
-            }
-        }
-        stage('Get Commit Hashes') {
-            steps {
-                script {
-                    def commitHashes = sh(script: 'git log -n 3 --pretty=format:%H', returnStdout: true).trim().split('\\n')
-                    echo "Last 3 commit hashes: ${commitHashes}"
+        // stage('SonarQube') {
+        //     steps {
+        //        dir('Docker-Projects/angular/expense-tracker-main') { 
+        //             sh "echo sonar.projectKey=expense-tracker > sonar-project.properties"
+        //             withSonarQubeEnv('sonar-server') {
+        //                 sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker -Dsonar.sources=. -Dsonar.projectKey=expense-tracker"
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('build image') {
+        //     steps {
+        //         dir('Docker-Projects/angular/expense-tracker-main') {
+        //             sh "docker build . -t ${IMAGE_NAME}"
+        //             sh "echo IMAGE_NAME=${IMAGE_NAME} > .env"
+        //             sh "export IMAGE_NAME==${IMAGE_NAME}"
+        //         }
+        //     }
+        // }
+        // stage('Login to Docker') {
+        //     steps {
+        //         sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}" 
+        //     }
+        // }
+        //  stage('PUSH') {
+        //     steps {
+        //         sh "docker push ${IMAGE_NAME}"
+        //     }
+        // }
+        // stage('Logout from Docker') {
+        //     steps {
+        //         sh "docker logout" 
+        //     }
+        // }
+        // stage('run docker stack') {
+        //     steps {
+        //         dir('Docker-Projects/angular/expense-tracker-main') {
+        //             sh "docker stack deploy --compose-file docker-compose.yml expense" 
+        //         }
+        //     }
+        // }
+        // stage('Get Commit Hashes') {
+        //     steps {
+        //         script {
+        //             def commitHashes = sh(script: 'git log -n 3 --pretty=format:%H', returnStdout: true).trim().split('\\n')
+        //             echo "Last 3 commit hashes: ${commitHashes}"
 
-                    echo "Latest commit hash: ${commitHashes[0]}"
-                    echo "Latest commit hash: ${commitHashes[0].take(7)}"
-                    echo "Second latest commit hash: ${commitHashes[1]}"
-                    echo "Second latest commit hash:${commitHashes[1].take(7)}"
-                    echo "Third latest commit hash: ${commitHashes[2]}"
-                    echo "Third latest commit hash: ${commitHashes[2].take(7)}"
-                }
-            }
-        }
+        //             echo "Latest commit hash: ${commitHashes[0]}"
+        //             echo "Latest commit hash: ${commitHashes[0].take(7)}"
+        //             echo "Second latest commit hash: ${commitHashes[1]}"
+        //             echo "Second latest commit hash:${commitHashes[1].take(7)}"
+        //             echo "Third latest commit hash: ${commitHashes[2]}"
+        //             echo "Third latest commit hash: ${commitHashes[2].take(7)}"
+        //         }
+        //     }
+        // }
     }
 }
