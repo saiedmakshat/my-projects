@@ -4,13 +4,13 @@ pipeline {
     }
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
-        DOCKER_CREDS = credentials('dockerhub') 
+        //DOCKER_CREDS = credentials('dockerhub') 
         GIT_HASH = GIT_COMMIT.take(7)
-        IMAGE_NAME = "saiedmakshat/angular-test:${GIT_HASH}"
+        //IMAGE_NAME = "saiedmakshat/angular-test:${GIT_HASH}"
     }
     tools {
         nodejs 'node-18' // Use the name you assigned earlier
-        maven 'maven3'
+        //maven 'maven3'
     }
     stages {
         // stage('Git Checkout') {
@@ -22,23 +22,22 @@ pipeline {
         // }
         stage('npm install CycloneDX') {
             steps {
-                dir('Docker-Projects/angular/expense-tracker-main') {
+                dir('Docker-Projects/nodejs/node-app') {
                     sh "npm i @cyclonedx/cyclonedx-npm"
                 }
             }
         }
         stage('npm install') {
             steps {
-                dir('Docker-Projects/angular/expense-tracker-main') {
+                dir('Docker-Projects/nodejs/node-app') {
                     sh 'npm install'
-                    sh 'npx @cyclonedx/cyclonedx-npm --output-file expense-tracker-sbom.json'
                 }
             }
         }
         stage('Generate SBOM file') {
             steps {
-                dir('Docker-Projects/angular/expense-tracker-main') {
-                    sh 'npx @cyclonedx/cyclonedx-npm --output-file expense-tracker-sbom.json'
+                dir('Docker-Projects/nodejs/node-app') {
+                    sh 'npx @cyclonedx/cyclonedx-npm --output-file node-app-sbom.json'
                 }
             }
         } 
@@ -57,33 +56,25 @@ pipeline {
     //            }
     //        }
     //    }
-        // stage('Generate SBOM') {
-        //     steps {
-        //         dir('Docker-Projects/angular/expense-tracker-main') {
-                    
-        //             // Example using OWASP Dependency-Check to generate a CycloneDX SBOM
-        //             sh 'mvn org.owasp:dependency-check-maven:check -Dformat=XML -DoutputDirectory=target -Dcyclonedx.enabled=true'
-        //         }
-        //     }
-        // }
+
         stage('SonarQube') {
             steps {
-               dir('Docker-Projects/angular/expense-tracker-main') { 
-                    sh "echo sonar.projectKey=expense-tracker > sonar-project.properties"
+               dir('Docker-Projects/nodejs/node-app') { 
+                    sh "echo sonar.projectKey=node-app > sonar-project.properties"
                     withSonarQubeEnv('sonar-server') {
-                        sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=expense-tracker -Dsonar.sources=. -Dsonar.projectKey=expense-tracker"
+                        sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=node-app -Dsonar.sources=. -Dsonar.projectKey=node-app"
                     }
                 }
             }
         }
        stage('Publish SBOM to Dependency-Track') {
             steps {
-                dir('Docker-Projects/angular/expense-tracker-main') {
+                dir('Docker-Projects/nodejs/node-app') {
                     dependencyTrackPublisher(
-                        artifact: 'expense-tracker-sbom.json', // Path to your generated SBOM
-                        projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b',
-                        // projectName: 'expense-tracker',
-                        // projectVersion: '1.0.0',
+                        artifact: 'node-app-sbom.json', // Path to your generated SBOM
+                        //projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b',
+                        projectName: 'node-app',
+                        projectVersion: '1.0.0',
                         synchronous: true, // Optional: Set to true for synchronous publishing
                         autoCreateProjects: true,
                     )
