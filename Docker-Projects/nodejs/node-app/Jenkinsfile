@@ -5,6 +5,7 @@ pipeline {
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
         //DOCKER_CREDS = credentials('dockerhub') 
+        TRACK_CRED = credentials('1a9fad8e-c432-427b-9f03-6acf6a2cfe85')
         GIT_HASH = GIT_COMMIT.take(7)
         //IMAGE_NAME = "saiedmakshat/angular-test:${GIT_HASH}"
     }
@@ -57,22 +58,25 @@ pipeline {
     //        }
     //    }
 
-        stage('SonarQube') {
-            steps {
-               dir('Docker-Projects/nodejs/node-app') { 
-                    sh "echo sonar.projectKey=node-app > sonar-project.properties"
-                    withSonarQubeEnv('sonar-server') {
-                        sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=node-app -Dsonar.sources=. -Dsonar.projectKey=node-app"
-                    }
-                }
-            }
-        }
+        // stage('SonarQube') {
+        //     steps {
+        //        dir('Docker-Projects/nodejs/node-app') { 
+        //             sh "echo sonar.projectKey=node-app > sonar-project.properties"
+        //             withSonarQubeEnv('sonar-server') {
+        //                 sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar-ProjectName=node-app -Dsonar.sources=. -Dsonar.projectKey=node-app"
+        //             }
+        //         }
+        //     }
+        // }
        stage('Publish SBOM to Dependency-Track') {
             steps {
                 dir('Docker-Projects/nodejs/node-app') {
                     dependencyTrackPublisher(
                         artifact: 'node-app-sbom.json', // Path to your generated SBOM
                         //projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b',
+                        dependencyTrackUrl: 'http://192.168.56.1:8088',
+                        dependencyTrackApiKey: ${TRACK_CRED},
+                        dependencyTrackFrontendUrl: 'http://192.168.56.1:8088',
                         projectName: 'node-app',
                         projectVersion: '1.0.0',
                         synchronous: true, // Optional: Set to true for synchronous publishing
