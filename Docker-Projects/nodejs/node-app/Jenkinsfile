@@ -68,30 +68,19 @@ pipeline {
         //         }
         //     }
         // }
-       stage('Publish SBOM to Dependency-Track1') {
-            steps {
-                dir('Docker-Projects/nodejs/node-app') {
-                    sh '''
-                        curl -X "PUT" "ttp://192.168.56.1:8088/api/v1/bom" \
-                            -H 'Content-Type: application/json' \
-                            -H 'X-Api-Key: odt_fGCOKsfj_tSwJnRuhEjGCHphXGUeymEFo3kHF8I1D' \
-                            -d @node-app-sbom.json
-                    '''
-                }
-            }
-        }        
+    
 
        stage('Publish SBOM to Dependency-Track') {
             steps {
                 dir('Docker-Projects/nodejs/node-app') {
                     dependencyTrackPublisher(
                         artifact: 'node-app-sbom.json', // Path to your generated SBOM
-                        projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b',
-                        dependencyTrackUrl: 'http://192.168.56.1:8088',
-                        dependencyTrackApiKey: '%TRACK_CRED%',
-                        dependencyTrackFrontendUrl: 'http://192.168.56.1:8088',
-                        // projectName: 'node-app',
-                        // projectVersion: '1.0.0',
+                        //projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b',
+                        // dependencyTrackUrl: 'http://192.168.56.1:8088',
+                        // dependencyTrackApiKey: '%TRACK_CRED%',
+                        // dependencyTrackFrontendUrl: 'http://192.168.56.1:8088',
+                        projectName: 'node-app',
+                        projectVersion: '1.0.0',
                         synchronous: true, // Optional: Set to true for synchronous publishing
                         autoCreateProjects: true,
                     )
