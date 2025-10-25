@@ -11,7 +11,7 @@ pipeline {
     }
     tools {
         nodejs 'node-18' // Use the name you assigned earlier
-        //maven 'maven3'
+        maven 'maven3'
     }
     stages {
         // stage('Git Checkout') {
@@ -24,7 +24,7 @@ pipeline {
         stage('npm install CycloneDX') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
-                    sh "npm i @cyclonedx/cyclonedx-npm"
+                    sh "npm -g i @cyclonedx/cyclonedx-npm"
                 }
             }
         }
@@ -42,31 +42,15 @@ pipeline {
                 }
             }
         } 
-        // stage('npm build') {
-        //     steps {
-        //         dir('Docker-Projects/angular/expense-tracker-main') {
-        //             sh 'npm run build --prod'
-        //         }
-        //     }
-        // }
+
         stage('OWASP Scan Dependency-Check') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
-                    dependencyCheck additionalArguments: ' --nvdApiKey "d8135ac8-b0a5-46bb-915f-c460a1278903" --scan ./ --format XML --format HTML', odcInstallation: 'DP'
+                    dependencyCheck additionalArguments: " --nvdApiKey ${NVD_APIKEY} --scan ./ --format XML --format HTML", odcInstallation: 'DP'
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
         }
-        //nvd  Your API Key: d8135ac8-b0a5-46bb-915f-c460a1278903 
-        // stage('Generate SBOM') {
-        //     steps {
-        //         dir('Docker-Projects/angular/expense-tracker-main') {
-                    
-        //             // Example using OWASP Dependency-Check to generate a CycloneDX SBOM
-        //             sh 'mvn org.owasp:dependency-check-maven:check -Dformat=XML -DoutputDirectory=target -Dcyclonedx.enabled=true'
-        //         }
-        //     }
-        // }
         stage('SonarQube') {
             steps {
                dir('Docker-Projects/angular/expense-tracker-main') { 
@@ -81,16 +65,22 @@ pipeline {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
                     dependencyTrackPublisher(
-                        artifact: 'expense-tracker-sbom.json', // Path to your generated SBOM
-                        //projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b',
+                        artifact: 'expense-tracker-sbom.json',
                         projectName: 'expense-tracker',
                         projectVersion: "${GIT_HASH}",
-                        synchronous: true, // Optional: Set to true for synchronous publishing
+                        synchronous: true, 
                         autoCreateProjects: true,
                     )
                 }
             }
         }        
+        // stage('npm build') {
+        //     steps {
+        //         dir('Docker-Projects/angular/expense-tracker-main') {
+        //             sh 'npm run build --prod'
+        //         }
+        //     }
+        // }
         // stage('build image') {
         //     steps {
         //         dir('Docker-Projects/angular/expense-tracker-main') {
@@ -122,21 +112,7 @@ pipeline {
         //         }
         //     }
         // }
-        // stage('Get Commit Hashes') {
-        //     steps {
-        //         script {
-        //             def commitHashes = sh(script: 'git log -n 3 --pretty=format:%H', returnStdout: true).trim().split('\\n')
-        //             echo "Last 3 commit hashes: ${commitHashes}"
-
-        //             echo "Latest commit hash: ${commitHashes[0]}"
-        //             echo "Latest commit hash: ${commitHashes[0].take(7)}"
-        //             echo "Second latest commit hash: ${commitHashes[1]}"
-        //             echo "Second latest commit hash:${commitHashes[1].take(7)}"
-        //             echo "Third latest commit hash: ${commitHashes[2]}"
-        //             echo "Third latest commit hash: ${commitHashes[2].take(7)}"
-        //         }
-        //     }
-        // }
+        
 
     // post {
     //     always {
