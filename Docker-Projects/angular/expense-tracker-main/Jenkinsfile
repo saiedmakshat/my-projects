@@ -5,6 +5,7 @@ pipeline {
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
         DOCKER_CREDS = credentials('dockerhub') 
+        NVD_APIKEY = credentials('79ff4806-3361-4407-882b-d1e6019146b8') 
         GIT_HASH = GIT_COMMIT.take(7)
         IMAGE_NAME = "saiedmakshat/angular-test:${GIT_HASH}"
     }
@@ -51,11 +52,12 @@ pipeline {
         stage('OWASP Scan Dependency-Check') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
-                    dependencyCheck additionalArguments: ' --scan ./ --format XML --format HTML', odcInstallation: 'DP'
+                    dependencyCheck additionalArguments: ' --nvdApiKey "d8135ac8-b0a5-46bb-915f-c460a1278903" --scan ./ --format XML --format HTML', odcInstallation: 'DP'
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
         }
+        //nvd  Your API Key: d8135ac8-b0a5-46bb-915f-c460a1278903 
         // stage('Generate SBOM') {
         //     steps {
         //         dir('Docker-Projects/angular/expense-tracker-main') {
