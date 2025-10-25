@@ -82,7 +82,7 @@ pipeline {
                         artifact: 'expense-tracker-sbom.json', // Path to your generated SBOM
                         //projectId: 'a2295c70-5093-4f59-be92-e5d227a0f57b',
                         projectName: 'expense-tracker',
-                        projectVersion: '1.0.0',
+                        projectVersion: "${GIT_HASH}",
                         synchronous: true, // Optional: Set to true for synchronous publishing
                         autoCreateProjects: true,
                     )
