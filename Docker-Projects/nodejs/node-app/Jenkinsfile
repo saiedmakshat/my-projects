@@ -24,21 +24,22 @@ pipeline {
         stage('npm install CycloneDX') {
             steps {
                 dir('Docker-Projects/nodejs/node-app') {
-                    sh "npm i @cyclonedx/cyclonedx-npm"
+                    sh "npm -g i @cyclonedx/cyclonedx-npm"
                 }
             }
         }
-        stage('npm install') {
-            steps {
-                dir('Docker-Projects/nodejs/node-app') {
-                    sh 'npm install'
-                }
-            }
-        }
+        // stage('npm install') {
+        //     steps {
+        //         dir('Docker-Projects/nodejs/node-app') {
+        //             sh 'npm install'
+        //         }
+        //     }
+        // }
         stage('Generate SBOM file') {
             steps {
                 dir('Docker-Projects/nodejs/node-app') {
-                    sh 'npx @cyclonedx/cyclonedx-npm --output-file node-app-sbom.json'
+                    //sh 'npx @cyclonedx/cyclonedx-npm --output-file node-app-sbom.json'
+                    sh 'cyclonedx-npm --package-lock-only --output-file  node-app-sbom.json'
                 }
             }
         } 
