@@ -3,7 +3,7 @@ pipeline {
         label 'master-node'
     }
     environment {
-        SCANNER_HOME= tool 'sonar-scanner'
+        //SCANNER_HOME= tool 'sonar-scanner'
         //DOCKER_CREDS = credentials('dockerhub') 
         TRACK_CRED = credentials('a47e0318-a569-40f1-bf05-aa068e90b40f')
         GIT_HASH = GIT_COMMIT.take(7)
