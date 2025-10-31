@@ -6,10 +6,16 @@ terraform {
     }
   }
 
-    backend "azurerm" {
-    resource_group_name = "your-resource-group"  # Replace with your resource group name
-    storage_account_name = "your-storage-account"  # Replace with your storage account name
-    container_name = "terraform-state"  # Replace with your desired container name
-    key = "terraform.tfstate"  # Optional: Specify the filename within the container (defaults to 'terraform.tfstate')
+  backend "azurerm" {
+    resource_group_name  = "tfstate"
+    storage_account_name = "tfstate-nawras"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
   }
+
+
+}
+
+provider "azurerm" {
+  features {}
 }
