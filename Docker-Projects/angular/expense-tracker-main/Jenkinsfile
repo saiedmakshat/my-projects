@@ -46,7 +46,7 @@ pipeline {
         stage('OWASP Scan Dependency-Check') {
             steps {
                 dir('Docker-Projects/angular/expense-tracker-main') {
-                    dependencyCheck additionalArguments: " --nvdApiKey ${NVD_APIKEY} --scan ./ --format XML --format HTML", odcInstallation: 'DP'
+                    dependencyCheck additionalArguments: ' --nvdApiKey %NVD_APIKEY% --scan ./ --format XML --format HTML', odcInstallation: 'DP'
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
