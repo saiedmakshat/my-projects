@@ -1,21 +1,6 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=4.5.0"
-    }
-  }
-
-  backend "azurerm" {
-    resource_group_name  = "tfstate"
-    storage_account_name = "tfstate-nawras"
-    container_name       = "tfstate"
-    key                  = "terraform.tfstate"
-  }
-
-
+resource "azurerm_resource_group" "rg" {
+  name     = var.resource_group_name
+  location = var.location
+  tags = var.tag-test
 }
 
-provider "azurerm" {
-  features {}
-}
