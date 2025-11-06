@@ -4,8 +4,24 @@ variable "client_id" {}
 variable "client_secret" {}
 
 variable "location" {
-    default = "eastus"
-    type = string
+  default = "eastus"
+  type    = string
+}
+
+variable "username" {
+  description = "Username for Virtual Machines"
+  default     = "azureuser"
+}
+
+variable "password" {
+  description = "Password for Virtual Machines"
+  sensitive   = true
+  default     = null
+}
+
+variable "vmsize" {
+  description = "Size of the VMs"
+  default     = "Standard_DS1_v2"
 }
 
 variable "tag-test" {
@@ -30,6 +46,6 @@ variable "tag-production" {
 
 
 variable "resource_group_name" {
-  type        = string
+  type    = string
   default = "rg"
 }
