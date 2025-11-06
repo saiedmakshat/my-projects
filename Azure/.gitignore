@@ -1,1 +1,12 @@
 .terraform/
+graph.png 
+graph.dot
+.history
+.*
+*.tfstate
+*.tfvars
+*.tfstate.*
+*.lock.*
+# dependencies
+/node_modules
+*/.terraform/
