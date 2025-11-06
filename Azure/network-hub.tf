@@ -31,9 +31,9 @@ resource "azurerm_subnet" "hub-dmz" {
 }
 
 resource "azurerm_network_interface" "hub-nic" {
-  name                 = "hub-nic"
-  location             = azurerm_resource_group.hub-vnet-rg.location
-  resource_group_name  = azurerm_resource_group.hub-vnet-rg.name
+  name                  = "hub-nic"
+  location              = azurerm_resource_group.hub-vnet-rg.location
+  resource_group_name   = azurerm_resource_group.hub-vnet-rg.name
   ip_forwarding_enabled = true
 
   ip_configuration {
@@ -51,7 +51,7 @@ resource "azurerm_public_ip" "hub-vpn-gateway1-pip" {
   name                = "hub-vpn-gateway1-pip"
   location            = azurerm_resource_group.hub-vnet-rg.location
   resource_group_name = azurerm_resource_group.hub-vnet-rg.name
-  allocation_method = "Dynamic"
+  allocation_method   = "Dynamic"
 }
 
 resource "azurerm_virtual_network_gateway" "hub-vnet-gateway" {

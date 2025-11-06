@@ -37,9 +37,9 @@ resource "azurerm_virtual_network_peering" "spoke1-hub-peer" {
 }
 
 resource "azurerm_network_interface" "spoke1-nic" {
-  name                 = "${local.prefix-spoke1}-nic"
-  location             = azurerm_resource_group.spoke1-vnet-rg.location
-  resource_group_name  = azurerm_resource_group.spoke1-vnet-rg.name
+  name                  = "${local.prefix-spoke1}-nic"
+  location              = azurerm_resource_group.spoke1-vnet-rg.location
+  resource_group_name   = azurerm_resource_group.spoke1-vnet-rg.name
   ip_forwarding_enabled = true
 
   ip_configuration {
@@ -47,8 +47,8 @@ resource "azurerm_network_interface" "spoke1-nic" {
     subnet_id                     = azurerm_subnet.spoke1-mgmt.id
     private_ip_address_allocation = "Dynamic"
   }
-  
-    tags = {
+
+  tags = {
     environment = local.prefix-spoke1
   }
 }

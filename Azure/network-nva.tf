@@ -5,16 +5,16 @@ resource "random_string" "suffix" {
 }
 
 resource "azurerm_network_interface" "hub-nva-nic" {
-  name                 = "${local.prefix-hub-nva}-nic"
-  location             = azurerm_resource_group.hub-nva-rg.location
-  resource_group_name  = azurerm_resource_group.hub-nva-rg.name
+  name                  = "${local.prefix-hub-nva}-nic"
+  location              = azurerm_resource_group.hub-nva-rg.location
+  resource_group_name   = azurerm_resource_group.hub-nva-rg.name
   ip_forwarding_enabled = true
 
   ip_configuration {
     name                          = local.prefix-hub-nva
     subnet_id                     = azurerm_subnet.hub-dmz.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "${local.hub-nva-nic-private_ip_address}"
+    private_ip_address            = local.hub-nva-nic-private_ip_address
   }
 
   tags = {
@@ -24,30 +24,30 @@ resource "azurerm_network_interface" "hub-nva-nic" {
 
 
 resource "azurerm_route_table" "hub-gateway-rt" {
-  name                          = "hub-gateway-rt"
-  location                      = azurerm_resource_group.hub-nva-rg.location
-  resource_group_name           = azurerm_resource_group.hub-nva-rg.name
+  name                = "hub-gateway-rt"
+  location            = azurerm_resource_group.hub-nva-rg.location
+  resource_group_name = azurerm_resource_group.hub-nva-rg.name
   #disable_bgp_route_propagation = false
   bgp_route_propagation_enabled = true
 
   route {
     name           = "toHub"
-    address_prefix = "${local.hub-address}"
+    address_prefix = local.hub-address
     next_hop_type  = "VnetLocal"
   }
 
   route {
     name                   = "toSpoke1"
-    address_prefix         = "${local.spoke1-address}"
+    address_prefix         = local.spoke1-address
     next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = "${local.hub-nva-nic-private_ip_address}"
+    next_hop_in_ip_address = local.hub-nva-nic-private_ip_address
   }
 
   route {
     name                   = "toSpoke2"
-    address_prefix         = "${local.spoke2-address}"
+    address_prefix         = local.spoke2-address
     next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = "${local.hub-nva-nic-private_ip_address}"
+    next_hop_in_ip_address = local.hub-nva-nic-private_ip_address
   }
 
   tags = {
@@ -62,17 +62,17 @@ resource "azurerm_subnet_route_table_association" "hub-gateway-rt-hub-vnet-gatew
 }
 
 resource "azurerm_route_table" "spoke1-rt" {
-  name                          = "spoke1-rt"
-  location                      = azurerm_resource_group.hub-nva-rg.location
-  resource_group_name           = azurerm_resource_group.hub-nva-rg.name
+  name                = "spoke1-rt"
+  location            = azurerm_resource_group.hub-nva-rg.location
+  resource_group_name = azurerm_resource_group.hub-nva-rg.name
   #disable_bgp_route_propagation = false
   bgp_route_propagation_enabled = true
 
   route {
     name                   = "toSpoke2"
-    address_prefix         = "${local.spoke2-address}"
+    address_prefix         = local.spoke2-address
     next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = "${local.hub-nva-nic-private_ip_address}"
+    next_hop_in_ip_address = local.hub-nva-nic-private_ip_address
   }
 
   route {
@@ -99,16 +99,16 @@ resource "azurerm_subnet_route_table_association" "spoke1-rt-spoke1-vnet-workloa
 }
 
 resource "azurerm_route_table" "spoke2-rt" {
-  name                          = "spoke2-rt"
-  location                      = azurerm_resource_group.hub-nva-rg.location
-  resource_group_name           = azurerm_resource_group.hub-nva-rg.name
+  name                = "spoke2-rt"
+  location            = azurerm_resource_group.hub-nva-rg.location
+  resource_group_name = azurerm_resource_group.hub-nva-rg.name
   #disable_bgp_route_propagation = false
   bgp_route_propagation_enabled = true
 
   route {
     name                   = "toSpoke1"
-    address_prefix         = "${local.spoke1-address}"
-    next_hop_in_ip_address = "${local.hub-nva-nic-private_ip_address}"
+    address_prefix         = local.spoke1-address
+    next_hop_in_ip_address = local.hub-nva-nic-private_ip_address
     next_hop_type          = "VirtualAppliance"
   }
 
