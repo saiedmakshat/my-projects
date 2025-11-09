@@ -23,4 +23,5 @@ resource "azurerm_resource_group" "rg-spoke-prod" {
   name     = "rg-spoke-${var.product_name}-prod"
   location = var.location
   tags = var.tags-for-all
+
 }
