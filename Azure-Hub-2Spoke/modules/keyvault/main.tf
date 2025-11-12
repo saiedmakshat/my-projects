@@ -10,5 +10,5 @@ resource "azurerm_key_vault" "kv" {
   sku_name                   = "premium"
   soft_delete_retention_days = 7
   enable_rbac_authorization = true
-
+  
 }

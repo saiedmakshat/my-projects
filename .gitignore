@@ -1,5 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
-
+*kube*
+azurek8s
+plan.*
 # compiled output
 /dist
 /tmp

@@ -165,14 +165,14 @@ resource "azurerm_key_vault_access_policy" "keyvault-principal" {
   depends_on         = [module.keyvault]
 }
 
-resource "azurerm_key_vault_secret" "kv-secret" {
-  name         = module.ServicePrincipal.client_id
-  value        = module.ServicePrincipal.client_secret
-  key_vault_id = module.keyvault.keyvault_id
-  depends_on = [
-    module.keyvault
-  ]
-}
+# resource "azurerm_key_vault_secret" "kv-secret" {
+#   name         = module.ServicePrincipal.client_id
+#   value        = module.ServicePrincipal.client_secret
+#   key_vault_id = module.keyvault.keyvault_id
+#   depends_on = [
+#     module.keyvault
+#   ]
+# }
 
 
 # data "azurerm_client_config" "current" {}
@@ -235,3 +235,4 @@ resource "local_file" "kubeconfig" {
   content      = module.aks.config
 
 }
+

@@ -1,0 +1,171 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer # Or NodePort/LoadBalancer for external acce
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3 # Specifies the desired number of NGINX pod replicas
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.28 #nawrasacr.azurecr.io/saied/nginx:v1 #ginx:1.28 # nginx:1.28 # Specifies the NGINX image and tag to use
+        ports:
+        - containerPort: 80  # Exposes port 80 within the container
+          name: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment1
+  labels:
+    app: nginx
+spec:
+  replicas: 3 # Specifies the desired number of NGINX pod replicas
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.28 #nawrasacr.azurecr.io/saied/nginx:v1 #ginx:1.28 # nginx:1.28 # Specifies the NGINX image and tag to use
+        ports:
+        - containerPort: 80  # Exposes port 80 within the container
+          name: http
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment2
+  labels:
+    app: nginx
+spec:
+  replicas: 3 # Specifies the desired number of NGINX pod replicas
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.28 #nawrasacr.azurecr.io/saied/nginx:v1 #ginx:1.28 # nginx:1.28 # Specifies the NGINX image and tag to use
+        ports:
+        - containerPort: 80  # Exposes port 80 within the container
+          name: http
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment3
+  labels:
+    app: nginx
+spec:
+  replicas: 3 # Specifies the desired number of NGINX pod replicas
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.28 #nawrasacr.azurecr.io/saied/nginx:v1 #ginx:1.28 # nginx:1.28 # Specifies the NGINX image and tag to use
+        ports:
+        - containerPort: 80  # Exposes port 80 within the container
+          name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+spec:
+  controller: nginx.org/ingress-controller
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  # annotations:
+  #   kubernetes.io/ingress.class: azure/application-gateway
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /test
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: nginx-gateway
+spec:
+  # The selector matches the ingress gateway pod labels.
+  # If you installed Istio using Helm following the standard documentation, this would be "istio=ingress"
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - nginx-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: nginx-service
+        port:
+          number: 80

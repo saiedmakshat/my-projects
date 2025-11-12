@@ -19,7 +19,7 @@ resource "azurerm_kubernetes_cluster" "aks-cluster" {
   
   default_node_pool {
     name       = "defaultpool"
-    vm_size    = "Standard DS2 v2"
+    vm_size    = "standard_dc2ads_v5"
     
     #zones   = [1, 2, 3]
     auto_scaling_enabled = true
@@ -38,7 +38,6 @@ resource "azurerm_kubernetes_cluster" "aks-cluster" {
       "nodepoolos"       = "linux"
    } 
   }
-
   service_principal  {
     client_id = var.client_id
     client_secret = var.client_secret
