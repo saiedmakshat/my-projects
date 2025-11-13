@@ -216,12 +216,12 @@ resource "azurerm_key_vault_access_policy" "keyvault-principal" {
 module "aks" {
   source                 = "./modules/aks/"
   service_principal_name = var.service_principal_name
-   client_id              = module.ServicePrincipal.client_id
+  client_id              = module.ServicePrincipal.client_id
   client_secret          = module.ServicePrincipal.client_secret
   #client_id              = var.client_id
   #client_secret          = var.client_secret
-  location               = var.location
-  resource_group_name    = var.resource_group_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   depends_on = [
     module.ServicePrincipal
@@ -230,9 +230,9 @@ module "aks" {
 }
 
 resource "local_file" "kubeconfig" {
-  depends_on   = [module.aks]
-  filename     = "./kubeconfig"
-  content      = module.aks.config
+  depends_on = [module.aks]
+  filename   = "./kubeconfig"
+  content    = module.aks.config
 
 }
 

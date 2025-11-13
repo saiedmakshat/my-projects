@@ -37,11 +37,57 @@ resource "azurerm_route_table" "spoke_route_table" {
     next_hop_type          = "VirtualAppliance"
     next_hop_in_ip_address = var.hub_fw_private_ip
   }
+
   route {
     name           = "r-internet"
     address_prefix = "${var.hub_fw_public_ip}/32"
     next_hop_type  = "Internet"
   }
+  #azure cli equivalent commands to create the routes above:by documantation
+  #az network route-table route create 
+  #--resource-group $RG 
+  #--name $FWROUTE_NAME 
+  #--route-table-name $FWROUTE_TABLE_NAME 
+  #--address-prefix 0.0.0.0/0 
+  #--next-hop-type VirtualAppliance 
+  #--next-hop-ip-address $FWPRIVATE_IP
+
+  #az network route-table route create 
+  #--resource-group $RG 
+  #--name $FWROUTE_NAME_INTERNET 
+  #--route-table-name $FWROUTE_TABLE_NAME 
+  #--address-prefix $FWPUBLIC_IP/32 
+  #--next-hop-type Internet
+
+
+
+  # add by AItional routes to allow AKS health probes and other services
+
+  # route {
+  #   name           = "r-azureloadbalancer"
+  #   address_prefix = "AzureLoadBalancer"
+  #   next_hop_type  = "Internet"
+  # }
+  # route {
+  #   name           = "r-azurefirewall"
+  #   address_prefix = "AzureFirewall"
+  #   next_hop_type  = "Internet"
+  # }
+  # route {
+  #   name           = "r-virtualnetwork"
+  #   address_prefix = "VirtualNetwork"
+  #   next_hop_type  = "VirtualNetwork"
+  # }
+  # route {
+  #   name           = "r-privatelink"
+  #   address_prefix = "AzurePrivateLinkService"
+  #   next_hop_type  = "Internet"
+  # }
+  # route {
+  #   name           = "r-privatedns"
+  #   address_prefix = "AzurePrivateDNSZone"
+  #   next_hop_type  = "Internet"
+  # }
 }
 
 resource "azurerm_subnet_route_table_association" "cluster_nodes_route_table" {

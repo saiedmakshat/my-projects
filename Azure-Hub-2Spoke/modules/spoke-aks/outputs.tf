@@ -8,16 +8,16 @@ output "spoke_address_space" {
   value       = var.spoke_address_space
 }
 output "privatelink_subnet_id" {
-  value       = azurerm_subnet.privatelink.id
+  value = azurerm_subnet.privatelink.id
 }
 output "ingress_subnet_id" {
-  value       = azurerm_subnet.ingress.id
+  value = azurerm_subnet.ingress.id
 }
 output "applicationgateway_subnet_id" {
-  value       = azurerm_subnet.applicationgateway.id
+  value = azurerm_subnet.applicationgateway.id
 }
 output "clusternodes_subnet_id" {
-  value       = azurerm_subnet.clusternodes.id
+  value = azurerm_subnet.clusternodes.id
 }
 output "route_table_id" {
   description = "The ID of the Route Table"

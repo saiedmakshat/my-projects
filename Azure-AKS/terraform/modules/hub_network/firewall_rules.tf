@@ -27,6 +27,7 @@ resource "azurerm_firewall_network_rule_collection" "org_wide_allow" {
     destination_ports     = ["123"]
     destination_addresses = ["*"]
   }
+
 }
 
 resource "azurerm_firewall_network_rule_collection" "aks_global_network_allow" {
@@ -90,6 +91,13 @@ resource "azurerm_firewall_network_rule_collection" "aks_global_network_allow" {
     protocols         = ["TCP"]
     destination_ports = ["443"]
     destination_fqdns = ["quay.io"]
+  }
+  rule {
+    name              = "githubusercontent.com"
+    source_ip_groups  = [azurerm_ip_group.aks_ip_group.id]
+    protocols         = ["TCP"]
+    destination_ports = ["443"]
+    destination_fqdns = ["pkg-containers.githubusercontent.com"]
   }
   depends_on = [azurerm_firewall_network_rule_collection.org_wide_allow]
 }
@@ -207,7 +215,16 @@ resource "azurerm_firewall_application_rule_collection" "aks_global_application_
   rule {
     name             = "azure-kubernetes-service"
     source_ip_groups = [azurerm_ip_group.aks_ip_group.id]
-    fqdn_tags        = ["AzureKubernetesService"]
+    #source_addresses = ["*"]
+    fqdn_tags = ["AzureKubernetesService"]
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+    protocol {
+      port = "80"
+      type = "Http"
+    }
   }
   rule {
     name             = "allow-acr"

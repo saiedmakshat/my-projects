@@ -17,16 +17,16 @@ variable "spoke_address_space" {
   type        = list(string)
 }
 variable "privatelink_subnet_prefix" {
-  type        = list(string)
+  type = list(string)
 }
 variable "ingress_subnet_prefix" {
-  type        = list(string)
+  type = list(string)
 }
 variable "applicationgateway_subnet_prefix" {
-  type        = list(string)
+  type = list(string)
 }
 variable "clusternodes_subnet_prefix" {
-  type        = list(string)
+  type = list(string)
 }
 variable "hub_vnet_id" {
   description = "ID of the hub virtual network"

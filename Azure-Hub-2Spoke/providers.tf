@@ -5,7 +5,7 @@ terraform {
       version = "=4.52.0"
     }
     azapi = {
-      source = "Azure/azapi"
+      source  = "Azure/azapi"
       version = "=2.7.0"
     }
     azuread = {
@@ -17,7 +17,7 @@ terraform {
       version = "=3.7.2"
     }
     time = {
-      source = "hashicorp/time"
+      source  = "hashicorp/time"
       version = "=0.13.1"
     }
   }

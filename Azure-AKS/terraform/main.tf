@@ -21,10 +21,11 @@ module "spoke_network" {
   #host_name                   = var.host_name
   cluster_nodes_address_space = var.cluster_nodes_address_space
   hub_fw_private_ip           = module.hub_network.hub_fw_private_ip
-  hub_fw_public_ip            = module.hub_network.hub_pip
-  hub_vnet_id                 = module.hub_network.hub_vnet_id
-  hub_vnet_name               = module.hub_network.hub_vnet_name
-  hub_rg_name                 = module.hub_network.hub_rg_name
+  #hub_fw_public_ip            = module.hub_network.hub_pip
+  hub_fw_public_ip = module.hub_network.hub_fw_public_ip
+  hub_vnet_id      = module.hub_network.hub_vnet_id
+  hub_vnet_name    = module.hub_network.hub_vnet_name
+  hub_rg_name      = module.hub_network.hub_rg_name
 
   depends_on = [module.hub_network]
 }

@@ -62,20 +62,20 @@ resource "azurerm_route_table" "spoke" {
 }
 # Route to remote Spoke via Firewall
 resource "azurerm_route" "to_remote_spoke" {
-  name                = "route-to-remote-spoke"
-  resource_group_name = var.resource_group_name
-  route_table_name    = azurerm_route_table.spoke.name
-  address_prefix      = var.remote_spoke_address_space[0]
-  next_hop_type       = "VirtualAppliance"
+  name                   = "route-to-remote-spoke"
+  resource_group_name    = var.resource_group_name
+  route_table_name       = azurerm_route_table.spoke.name
+  address_prefix         = var.remote_spoke_address_space[0]
+  next_hop_type          = "VirtualAppliance"
   next_hop_in_ip_address = var.firewall_private_ip
 }
 # Route for Internet Access via Firewall
 resource "azurerm_route" "to_internet" {
-  name                = "route-to-internet"
-  resource_group_name = var.resource_group_name
-  route_table_name    = azurerm_route_table.spoke.name
-  address_prefix      = "0.0.0.0/0"
-  next_hop_type       = "VirtualAppliance"
+  name                   = "route-to-internet"
+  resource_group_name    = var.resource_group_name
+  route_table_name       = azurerm_route_table.spoke.name
+  address_prefix         = "0.0.0.0/0"
+  next_hop_type          = "VirtualAppliance"
   next_hop_in_ip_address = var.firewall_private_ip
 }
 # Associate Route Table to Spoke Subnets
