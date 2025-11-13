@@ -18,3 +18,4 @@ resource "azurerm_firewall" "azure_firewall" {
     public_ip_address_id = azurerm_public_ip.hub_pip.id
   }
 }
+

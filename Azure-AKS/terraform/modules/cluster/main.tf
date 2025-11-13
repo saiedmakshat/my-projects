@@ -20,6 +20,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     revisions                        = ["asm-1-27"]
     internal_ingress_gateway_enabled = true
     external_ingress_gateway_enabled = true
+
   }
 
   key_vault_secrets_provider {
@@ -41,8 +42,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     vm_size    = var.vm_size
     node_count = var.node_count
     #zones          = ["1", "2", "3"]
-    vnet_subnet_id              = var.vnet_subnet_id
-    max_pods                    = 250
+    vnet_subnet_id = var.vnet_subnet_id
+    max_pods       = 250
     # auto_scaling_enabled        = true
     # min_count                   = 2
     # max_count                   = 4
@@ -59,4 +60,6 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     gateway_id = var.application_gateway_id
   }
 }
+
+
 

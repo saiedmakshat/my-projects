@@ -72,8 +72,8 @@ resource "azurerm_application_gateway" "gateway" {
 
 
   backend_address_pool {
-    name = local.backend_address_pool_name
-    ip_addresses = [ "10.10.1.10" ]
+    name         = local.backend_address_pool_name
+    ip_addresses = ["10.10.1.10"]
   }
 
   backend_http_settings {
@@ -102,6 +102,18 @@ resource "azurerm_application_gateway" "gateway" {
     backend_http_settings_name = local.http_setting_name
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 # resource "azurerm_web_application_firewall_policy" "name" {
 #   location = "value"
 #   name = "value"
